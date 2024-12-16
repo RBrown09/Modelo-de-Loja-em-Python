@@ -1,0 +1,144 @@
+import React, { useState } from 'react';
+
+// Dados dos produtos
+const produtos = {
+  todos: [
+    { id: 1, nome: 'Camiseta Básica', preco: 49.90, categoria: 'masculino', imagem: '/api/placeholder/200/300' },
+    { id: 2, nome: 'Vestido Floral', preco: 129.90, categoria: 'feminino', imagem: '/api/placeholder/200/300' },
+    { id: 3, nome: 'Jaqueta de Couro', preco: 299.90, categoria: 'masculino', imagem: '/api/placeholder/200/300' },
+    { id: 4, nome: 'Conjunto Infantil', preco: 89.90, categoria: 'infantil', imagem: '/api/placeholder/200/300' },
+    { id: 5, nome: 'Calça Jeans', preco: 159.90, categoria: 'masculino', imagem: '/api/placeholder/200/300' },
+    { id: 6, nome: 'Blusa de Moletom', preco: 99.90, categoria: 'feminino', imagem: '/api/placeholder/200/300' },
+    { id: 7, nome: 'Shorts Infantil', preco: 59.90, categoria: 'infantil', imagem: '/api/placeholder/200/300' },
+    { id: 8, nome: 'Camisa Social', preco: 189.90, categoria: 'masculino', imagem: '/api/placeholder/200/300' },
+    { id: 9, nome: 'Saia Midi', preco: 119.90, categoria: 'feminino', imagem: '/api/placeholder/200/300' },
+    { id: 10, nome: 'T-shirt Infantil', preco: 39.90, categoria: 'infantil', imagem: '/api/placeholder/200/300' }
+  ]
+};
+
+const FashionStore = () => {
+  const [abaAtual, setAbaAtual] = useState('Home');
+  const [termoBusca, setTermoBusca] = useState('');
+
+  // Filtrar produtos baseado na aba e termo de busca
+  const produtosFiltrados = produtos.todos.filter(produto => {
+    const matchAba = 
+      abaAtual === 'Home' || 
+      abaAtual === 'Produtos' || 
+      abaAtual.toLowerCase() === produto.categoria;
+    
+    const matchBusca = termoBusca === '' || 
+      produto.nome.toLowerCase().includes(termoBusca.toLowerCase());
+    
+    return matchAba && matchBusca;
+  });
+
+  // Produtos em destaque para a Home
+  const produtosDestaque = produtos.todos.slice(0, 3);
+
+  // Ícone de casa simples
+  const HomeIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+  );
+
+  // Ícone de camisa simples
+  const ShirtIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2l.23 1.4a1 1 0 0 0 1 .82H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V7.72a1 1 0 0 0 1-.82l.23-1.4a2 2 0 0 0-1.34-2z"/>
+    </svg>
+  );
+
+  return (
+    <div className="bg-gray-900 min-h-screen text-white font-serif font-bold flex flex-col">
+      {/* Cabeçalho com Barra de Pesquisa */}
+      <header className="bg-black p-4 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Fashion Store</h1>
+        <div className="relative w-1/2">
+          <input 
+            type="text" 
+            placeholder="O que você está procurando" 
+            className="w-full p-2 bg-gray-800 text-gray-300 placeholder-gray-500 rounded-lg pl-10 font-serif font-bold"
+            value={termoBusca}
+            onChange={(e) => {
+              setTermoBusca(e.target.value);
+              // Muda para a aba de Produtos quando algo é digitado
+              setAbaAtual('Produtos');
+            }}
+          />
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-3 text-gray-500">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+      </header>
+
+      {/* Navegação */}
+      <nav className="bg-gray-800 flex justify-center space-x-8 p-4">
+        {['Home', 'Produtos', 'Masculino', 'Feminino', 'Infantil'].map(aba => (
+          <button 
+            key={aba} 
+            onClick={() => setAbaAtual(aba)}
+            className={`flex items-center space-x-2 px-4 py-2 rounded font-serif font-bold ${
+              abaAtual === aba ? 'bg-gray-700 text-white' : 'hover:bg-gray-700'
+            }`}
+          >
+            {aba === 'Home' && <HomeIcon />}
+            {aba === 'Produtos' && <ShirtIcon />}
+            <span>{aba}</span>
+          </button>
+        ))}
+      </nav>
+
+      {/* Conteúdo Principal */}
+      <main className="p-8 grid grid-cols-3 gap-6 flex-grow">
+        {abaAtual === 'Home' 
+          ? produtosDestaque.map(produto => (
+              <div 
+                key={produto.id} 
+                className="bg-gray-800 rounded-lg p-4 text-center hover:bg-gray-700 transition font-serif font-bold"
+              >
+                <img 
+                  src={produto.imagem} 
+                  alt={produto.nome} 
+                  className="w-full h-64 object-cover rounded-lg mb-4"
+                />
+                <h3 className="text-lg font-bold">{produto.nome}</h3>
+                <p className="text-gray-400">R$ {produto.preco.toFixed(2)}</p>
+              </div>
+            ))
+          : produtosFiltrados.map(produto => (
+              <div 
+                key={produto.id} 
+                className="bg-gray-800 rounded-lg p-4 text-center hover:bg-gray-700 transition font-serif font-bold"
+              >
+                <img 
+                  src={produto.imagem} 
+                  alt={produto.nome} 
+                  className="w-full h-64 object-cover rounded-lg mb-4"
+                />
+                <h3 className="text-lg font-bold">{produto.nome}</h3>
+                <p className="text-gray-400">R$ {produto.preco.toFixed(2)}</p>
+              </div>
+            ))
+        }
+        
+        {/* Mensagem quando não há produtos */}
+        {produtosFiltrados.length === 0 && (
+          <div className="col-span-3 text-center text-gray-500 py-8">
+            Nenhum produto encontrado
+          </div>
+        )}
+      </main>
+
+      {/* Rodapé */}
+      <footer className="bg-black p-4 text-center">
+        <p className="font-serif font-bold text-gray-300">Espero que goste de tudo</p>
+      </footer>
+    </div>
+  );
+};
+
+export default FashionStore;
